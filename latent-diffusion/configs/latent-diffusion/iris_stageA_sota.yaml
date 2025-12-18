@@ -1,0 +1,130 @@
+model:
+  base_learning_rate: 1.0e-4
+  target: ldm.models.diffusion.ddpm.LatentDiffusion
+  params:
+    # --- 噪声/损失 ---
+    timesteps: 1000
+    linear_start: 0.0001          # cosine-like: 更弱的最小beta（搭配下方cos调度）
+    linear_end: 0.02
+    schedule_type: cosine         # 使用 cosine 噪声表（仓库支持时生效）
+    loss_type: l2
+    parameterization: eps
+    num_timesteps_cond: 1
+    scale_by_sigma: False
+    monitor: val/loss_simple_ema
+    use_ema: True
+    ema_decay: 0.9999
+
+    # --- 条件：ADM 风格，类嵌入做 context ---
+    conditioning_key: adm
+    cond_stage_key: class_label
+    cond_stage_config:
+      target: ldm.modules.encoders.modules.ClassEmbedder
+      params:
+        n_classes:  # <<< 训练前自动填入（见下方命令）
+        embedding_dim: 256
+        key: class_label
+
+    # --- First-stage：加载你已经训好的 KL-AE 并冻结 ---
+    first_stage_config:
+      target: ldm.models.autoencoder.AutoencoderKL
+      params:
+        embed_dim: 4
+        ddconfig:
+          double_z: true
+          z_channels: 4
+          resolution: 256
+          in_channels: 3
+          out_ch: 3
+          ch: 128
+          ch_mult: [1, 1, 2, 2, 4]
+          num_res_blocks: 2
+          attn_resolutions: [16]
+          dropout: 0.0
+    first_stage_ckpt: /work3/s240046/iris_ldm/logs/2025-10-18T05-08-55_iris_ae_kl/checkpoints/epoch=000013.ckpt
+    first_stage_key: image
+
+    # --- UNet 主体（latent 32×32，上中高容量） ---
+    unet_config:
+      target: ldm.modules.diffusionmodules.openaimodel.UNetModel
+      params:
+        image_size: 32            # 对应 256/8 的 latent 尺度
+        in_channels: 4
+        out_channels: 4
+        model_channels: 256
+        channel_mult: [1, 2, 3, 4]
+        num_res_blocks: 2
+        attention_resolutions: [4, 2, 1]
+        num_heads: 8
+        use_spatial_transformer: True
+        transformer_depth: 1
+        context_dim: 256          # 与 embedding_dim 对齐
+        use_checkpoint: True      # grad checkpoint 降显存
+        dropout: 0.0
+
+    # --- 训练细节 ---
+    use_fp16: True               # （内部混精；Lightning 也会开16-bit）
+    # classifier-free 可等后续 Stage-B 再加，这里先纯类条件把分离学稳
+
+data:
+  target: main.DataModuleFromConfig
+  params:
+    batch_size: 16               # V100 32GB 建议16；配合累计=4 → 有效64
+    num_workers: 4
+    wrap: False
+    train:
+      target: ldm.data.iris_csv.IrisCSV
+      params:
+        csv_path: /work3/s240046/iris_ldm/data/iris_manifest.csv
+        split: train
+    validation:
+      target: ldm.data.iris_csv.IrisCSV
+      params:
+        csv_path: /work3/s240046/iris_ldm/data/iris_manifest.csv
+        split: val
+
+# --- 优化器 & 调度 ---
+optim:
+  target: torch.optim.AdamW
+  params:
+    lr: 1.0e-4
+    betas: [0.9, 0.99]
+    eps: 1.0e-8
+    weight_decay: 1.0e-2
+
+lr_scheduler:
+  target: ldm.modules.lr_schedules.WarmupCosineLR
+  params:
+    warmup_steps: 5000           # 先热身 5k steps
+    min_lr: 1.0e-5               # 余弦退火到 1e-5
+    max_steps: 300000            # 计划训练总步数（可按需改）
+
+lightning:
+  logger:
+    target: pytorch_lightning.loggers.TensorBoardLogger
+    params:
+      save_dir: /work3/s240046/iris_ldm/logs
+      name: stageA_sota
+  callbacks:
+    image_logger:
+      target: main.ImageLogger
+      params:
+        batch_frequency: 2000
+        max_images: 6
+        increase_log_steps: true
+    # 每 N 步保存（保 top3 + last），防止只看 val 指标
+    modelckpt:
+      target: pytorch_lightning.callbacks.ModelCheckpoint
+      params:
+        dirpath: null             # 由 main.py 决定 logs 子目录
+        filename: "{epoch:06}"
+        save_last: True
+        save_top_k: 3
+        monitor: "val/loss_simple_ema"
+        mode: "min"
+  trainer:
+    accelerator: gpu
+    gpus: 1
+    precision: 16
+    accumulate_grad_batches: 4
+    gradient_clip_val: 1.0
