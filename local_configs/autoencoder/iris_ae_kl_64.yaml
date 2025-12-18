@@ -1,0 +1,61 @@
+model:
+  base_learning_rate: 4.5e-6
+  target: ldm.models.autoencoder.AutoencoderKL
+  params:
+    monitor: "val/rec_loss"
+    embed_dim: 4               # 潜空间维度——与 LDM 保持一致
+    lossconfig:
+      target: ldm.modules.losses.LPIPSWithDiscriminator
+      params:
+        disc_start: 40000      # 判别器较晚介入，先把重建学稳
+        kl_weight: 1.0e-6
+        disc_weight: 0.5
+
+    ddconfig:
+      double_z: true
+      z_channels: 4            # 与 embed_dim 一致
+      resolution: 256
+      in_channels: 3
+      out_ch: 3
+      ch: 128
+      ch_mult: [1, 2, 4]  # 总下采样 ×4
+      num_res_blocks: 2
+      attn_resolutions: [32]
+      dropout: 0.0
+
+data:
+  target: main.DataModuleFromConfig
+  params:
+    batch_size: 8
+    num_workers: 4
+    wrap: False
+    train:
+      target: ldm.data.iris_csv.IrisCSV
+      params:
+        csv_path: /work3/s240046/iris_ldm/data/iris_manifest.csv
+        split: train
+    validation:
+      target: ldm.data.iris_csv.IrisCSV
+      params:
+        csv_path: /work3/s240046/iris_ldm/data/iris_manifest.csv
+        split: val
+
+lightning:
+  logger:
+    target: pytorch_lightning.loggers.TensorBoardLogger
+    params:
+      save_dir: /work3/s240046/iris_ldm/logs
+      name: ae_kl
+      version: null
+  callbacks:
+    image_logger:
+      target: main.ImageLogger
+      params:
+        batch_frequency: 1000
+        max_images: 6
+        increase_log_steps: true
+  trainer:
+    accelerator: gpu
+    gpus: 1
+    accumulate_grad_batches: 1
+    precision: 32
