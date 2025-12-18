@@ -3,7 +3,7 @@
 This repository contains code to generate synthetic near-infrared (NIR) iris images using a latent diffusion model (LDM) in a masked *img2img* setting.  
 The focus is on identity-preserving generation: the iris texture is kept stable, while the periocular region (outside the iris) can be modified with a controllable strength parameter.
 
-The repository is a companion to my Master's thesis **“Identity-Preserving Iris Image Generation Using Generative Methods”** and only includes **generation code**. Evaluation scripts and experimental pipelines are intentionally not included.
+The repository only includes **generation code**. Evaluation scripts and experimental pipelines are intentionally not included.
 
 ---
 
@@ -187,12 +187,12 @@ Generated images are written to `--outdir`, typically organised by class.
 
 ---
 
-## 6. Example: running on HPC (V100)
+## 6. Example: running on HPC
 
 An example LSF job script is provided in:
 
 ```text
-models/job_gen_img2img_all_masked_v100.sh
+img2img_generation_example.sh
 ```
 
 It assumes a HPC module system and a virtual environment located at `<repo>/.venv_ldm`.  
