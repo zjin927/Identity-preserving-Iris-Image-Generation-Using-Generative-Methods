@@ -35,10 +35,10 @@ The most relevant folders and files are:
 **Not provided in this repository:**
 
 - The ND-LG4000-LR dataset should be required directly from the source.
-- Any trained model checkpoints (`.ckpt` / `.pth`).
+- The Syntehtics image generated and trained model checkpoints (`.ckpt` / `.pth`) should be available in the following [Link].
 - Evaluation and benchmarking scripts.
 
-Users are expected to provide their own data, masks, and trained checkpoints, in accordance with the respective licenses. You can access our trained checkpoints by contacting ......
+Users are expected to provide their own data, masks, and trained checkpoints, in accordance with the respective licenses. You can access our trained checkpoints by contacting xxxx@xxx.xx
 
 ---
 
@@ -223,6 +223,7 @@ Please refer to their repository for the original code license and model weight 
 
 If you use this code in scientific work, please consider citing:
 
-- Rombach et al., *High-Resolution Image Synthesis with Latent Diffusion Models*, CVPR 2022.
+...
 
----
+## 8. Disclaimer
+These resources are available only for research purposes. In case any question contact: xxxxx@
