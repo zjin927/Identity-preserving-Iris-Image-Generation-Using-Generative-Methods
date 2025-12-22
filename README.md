@@ -34,7 +34,7 @@ The most relevant folders and files are:
 
 **Not provided in this repository:**
 
-- Any iris datasets or segmentation masks.
+- The ND-LG4000-LR dataset should be required directly from the source.
 - Any trained model checkpoints (`.ckpt` / `.pth`).
 - Evaluation and benchmarking scripts.
 
