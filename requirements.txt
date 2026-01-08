@@ -62,3 +62,6 @@ six==1.17.0
 threadpoolctl==3.6.0
 tqdm==4.67.1
 zipp==3.23.0
+
+# --- UI (for iris_generation_ui.py) ---
+gradio>=4.0.0
