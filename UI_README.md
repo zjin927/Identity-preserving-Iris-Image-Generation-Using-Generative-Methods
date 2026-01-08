@@ -84,15 +84,6 @@ python img2img_single_image.py \
   --strength 0.5
 ```
 
-## Performance Optimization
-
-The UI includes several performance optimizations:
-- **Model Caching**: The model is loaded and cached on first use. Subsequent generations reuse the cached model, significantly reducing loading time (from ~1-2 minutes to near-instant).
-- **Optimized Parameters**: `denoise_steps` has been reduced from 50 to 30 to improve generation speed while maintaining quality.
-- **Expected Performance** (on RTX 2060 Laptop):
-  - First generation: ~4-6 minutes (includes model loading)
-  - Subsequent generations: ~3-5 minutes (using cached model)
-
 ## Notes
 
 - Make sure CUDA is properly configured (if using GPU)

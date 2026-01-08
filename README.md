@@ -163,6 +163,21 @@ cd latent-diffusion
 python img2img_by_all_per_class_masked.py   --config  ../local_configs/latent-diffusion/iris_stageA_sota_64.yaml   --ckpt    /path/to/your/iris_stageA_sota_64.ckpt   --csv     /path/to/your/iris_manifest.csv   --split   train   --classes 0-811   --num_per_class 1   --outdir  ../outputs/ldm_s0_5_all_masked   --ddim_steps 100   --denoise_steps 50   --eta 0.0   --strength 0.5   --bs 4   --seed_base 0   --mask_dilate_px 2   --mask_feather_px 3
 ```
 
+### 5.2. Optional: GUI generation (Gradio)
+
+In addition to the command-line script, this repository provides a lightweight **Gradio-based GUI** for masked *img2img* generation.
+
+- Entry point: `iris_generation_ui.py`
+- Detailed usage guide (including screenshots and HPC notes): `UI_README.md`
+
+#### 5.2.1. Launch the GUI (local)
+
+From the repository root:
+
+```bash
+python iris_generation_ui.py
+```
+
 Key arguments:
 
 - `--config` – LDM configuration file (YAML).
