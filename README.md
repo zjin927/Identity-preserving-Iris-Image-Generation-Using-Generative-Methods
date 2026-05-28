@@ -38,7 +38,7 @@ The most relevant folders and files are:
 - The Synthetic images generated and trained model checkpoints (`.ckpt` / `.pth`) should be available in the following [Link].
 - Evaluation and benchmarking scripts.
 
-Users are expected to provide their own data, masks, and trained checkpoints, in accordance with the respective licenses. You can access our trained checkpoints by contacting xxxx@xxx.xx
+Users are expected to provide their own data, masks, and trained checkpoints, in accordance with the respective licenses. You can access our trained checkpoints by contacting juan.tapia-farias@h-da.de
 
 ---
 
