@@ -241,4 +241,4 @@ If you use this code in scientific work, please consider citing:
 ...
 
 ## 8. Disclaimer
-These resources are available only for research purposes. In case any question contact: xxxxx@
+These resources are available only for research purposes. In case of any questions, contact: juan.tapia-farias@h-da.de and zjin0027@gmail.com
