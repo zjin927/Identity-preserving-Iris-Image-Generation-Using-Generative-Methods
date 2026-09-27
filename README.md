@@ -1,4 +1,4 @@
-# Identity-Preserving Iris Image Generation (Latent Diffusion)
+# Emphasizing Iris Identity Preservation using Latent Diffusion Models
 
 This repository contains code to generate synthetic near-infrared (NIR) iris images using a latent diffusion model (LDM) in a masked *img2img* setting.  
 The focus is on identity-preserving generation: the iris texture is kept stable, while the periocular region (outside the iris) can be modified with a controllable strength parameter.
@@ -34,8 +34,8 @@ The most relevant folders and files are:
 
 **Not provided in this repository:**
 
-- The ND-LG4000-LR dataset should be required directly from the source.
-- The Synthetic images generated and trained model checkpoints (`.ckpt` / `.pth`) should be available in the following [Link].
+- The ND-LG4000-LR dataset should be obtained directly from the source.
+- The Synthetic images generated and trained model checkpoints (`.ckpt` / `.pth`) should be available in the following [Link] (upon acceptance).
 - Evaluation and benchmarking scripts.
 
 Users are expected to provide their own data, masks, and trained checkpoints, in accordance with the respective licenses. You can access our trained checkpoints by contacting juan.tapia-farias@h-da.de
